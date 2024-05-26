@@ -1,4 +1,5 @@
-**/
+**/__pycache__
+api/**/
 browser.json
 lists.txt
 *.log
