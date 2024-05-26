@@ -9,6 +9,8 @@ from log import create_logger
 app = Flask(__name__)
 api = Api(app)
 
+root = os.path.dirname(os.path.abspath(__file__))
+
 class Home(Resource):
     def get(self):
         ps_aux = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -25,7 +27,7 @@ class Log(Resource):
     def get(self):
         # Read the log file
         try:
-            log = [line.strip() for line in open('app.log', 'r').readlines()]
+            log = [line.strip() for line in open(os.path.join(root, 'app.log'), 'r').readlines()]
         except FileNotFoundError:
             return {'error': 'File not found'}, 404
         else:
@@ -47,7 +49,7 @@ class Error(Resource):
     def get(self):
         # Read the log file
         try:
-            log = [line.strip() for line in open('error.log', 'r').readlines()]
+            log = [line.strip() for line in open(os.path.join(root, 'error.log'), 'r').readlines()]
         except FileNotFoundError:
             return {'error': 'File not found'}, 404
         else:
@@ -70,16 +72,16 @@ class Start(Resource):
     def post(self):
         urls = request.json['urls']
         if len(urls) > 0:
-            with open('lists.txt', 'w') as f:
+            with open(os.path.join(root, 'lists.txt'), 'w') as f:
                 f.write('\n'.join(urls))
             ps_aux = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             count = len([line for line in ps_aux.stdout.decode('utf-8').split("\n") if 'python3 -m main run' in line])
             if count > 0:
                 return {'status': 'Already running'}, 200
             else:
-                os.remove('app.log')
-                os.remove('error.log')
-                _ = subprocess.Popen(['python3', '-m', 'main', 'run'])
+                os.remove(os.path.join(root, 'app.log'))
+                os.remove(os.path.join(root, 'error.log'))
+                _ = subprocess.Popen(['/home/lucas/repos/ytmusicdl/.venv/bin/python3', '-m', 'main', 'run'])
                 return {'status': 'OK'}, 200
         else:
             return {'status': 'No URLs provided'}, 400

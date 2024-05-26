@@ -1,14 +1,15 @@
 import logging
-from multiprocessing import current_process
+import os
+
+root = os.path.dirname(os.path.abspath(__file__))
 
 class InfoFilter(logging.Filter):
     def filter(self, rec):
         return rec.levelno == logging.INFO
 
-
 def create_logger(name):
-    log_file = "app.log"
-    error_file = "error.log"
+    log_file = os.path.join(root, "app.log")
+    error_file = os.path.join(root, "error.log")
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)  # Set logger level to DEBUG

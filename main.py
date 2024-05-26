@@ -17,7 +17,10 @@ from ytmusicapi import YTMusic
 from log import create_logger
 import shutil
 
+
 log = create_logger("ytdownloader")
+
+root = os.path.dirname(os.path.abspath(__file__))
 
 
 # Rewrite Playlist class to enable oauth within YouTube class
@@ -41,21 +44,21 @@ class Playlist(Playlist):
 
 # Function to manually edit id3 tags for every album with year '0000'
 def fix_zero():
-    for folder in os.listdir():
+    for folder in os.listdir(root):
         try:
-            if os.path.isdir(folder) and folder.split(" - ")[1] == "0000":
+            if os.path.isdir(os.path.join(root, folder)) and folder.split(" - ")[1] == "0000":
                 input_year = input(
                     f"Enter year for album {folder.split(' - ')[2]} - {folder.split(' - ')[0]}: "
                 )
-                for file in os.listdir(folder):
+                for file in os.listdir(os.path.join(root, folder)):
                     if file.endswith(".mp3"):
-                        audio = EasyID3(os.path.join(folder, file))
+                        audio = EasyID3(os.path.join(root, folder, file))
                         audio["date"] = input_year
                         audio["originaldate"] = input_year
                         audio.save()
                 os.rename(
-                    folder,
-                    f"{folder.split(' - ')[0]} - {input_year} - {folder.split('-')[2]}",
+                    os.path.join(root, folder),
+                    os.path.join(root, f"{folder.split(' - ')[0]} - {input_year} - {folder.split('-')[2]}"),
                 )
         except IndexError:
             pass
@@ -134,17 +137,17 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
     bitrate = None
     try:
         bitrate = "256"
-        video.streams.get_by_itag(141).download(output_path=album_title)
+        video.streams.get_by_itag(141).download(output_path=os.path.join(root, album_title))
     except:
         log.warning(f"Failed {video.title} from {album_title} - {author}. Trying lower")
         try:
-            video.streams.get_by_itag(140).download(output_path=album_title)
+            video.streams.get_by_itag(140).download(output_path=os.path.join(root, album_title))
         except:
             log.warning(
                 f"Failed {video.title} from {album_title} - {author}. Trying lowest"
             )
             try:
-                video.streams.get_by_itag(139).download(output_path=album_title)
+                video.streams.get_by_itag(139).download(output_path=os.path.join(root, album_title))
             except:
                 log.warning(
                     f"Failed {video.title} from {album_title} - {author}. Trying webm"
@@ -152,20 +155,20 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
                 extension = "webm"
                 try:
                     bitrate = "160"
-                    video.streams.get_by_itag(140).download(output_path=album_title)
+                    video.streams.get_by_itag(140).download(output_path=os.path.join(root, album_title))
                 except:
                     log.warning(
                         f"Failed {video.title} from {album_title} - {author}. Trying lower webm"
                     )
                     try:
-                        video.streams.get_by_itag(139).download(output_path=album_title)
+                        video.streams.get_by_itag(139).download(output_path=os.path.join(root, album_title))
                     except:
                         log.warning(
                             f"Failed {video.title} from {album_title} - {author}. Trying lowest webm"
                         )
                         try:
                             video.streams.get_by_itag(139).download(
-                                output_path=album_title
+                                output_path=os.path.join(root, album_title)
                             )
                         except AttributeError:
                             log.error(
@@ -185,14 +188,14 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
 
     # Convert file to mp3 using pydub
     sound = AudioSegment.from_file(
-        album_title
+        os.path.join(root, album_title)
         + "/"
         + safe_filename(video.title)
         + (".webm" if extension else ".mp4"),
         format="webm" if extension else "m4a",
     )
     sound.export(
-        album_title
+        os.path.join(root, album_title)
         + "/"
         + str(i).zfill(2)
         + " - "
@@ -202,7 +205,7 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
         bitrate=bitrate if bitrate else None,
     )
     edit_tags(
-        album_title
+        os.path.join(root, album_title)
         + "/"
         + str(i).zfill(2)
         + " - "
@@ -217,7 +220,7 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
     )
     # Delete file
     os.remove(
-        album_title
+        os.path.join(root, album_title)
         + "/"
         + safe_filename(video.title)
         + (".webm" if extension else ".mp4")
@@ -252,12 +255,12 @@ def download_playlist(url):
     album_title = playlist.title.replace("Album", f"{author} - {album_year}")
 
     # Create folder for the playlist
-    os.makedirs(album_title, exist_ok=True)
+    os.makedirs(os.path.join(root, album_title), exist_ok=True)
 
     download_image(
-        playlist.videos[0].thumbnail_url, album_title + f"/image.jpg"
+        playlist.videos[0].thumbnail_url, os.path.join(root, album_title, "image.jpg")
     )
-    image_path = album_title + f"/image.jpg"
+    image_path = os.path.join(root, album_title, "image.jpg")
     items = [
         (i, video, safe_filename(album_title), author, playlist, album_year, image_path)
         for i, video in enumerate(playlist.videos, start=1)
@@ -269,22 +272,22 @@ def download_playlist(url):
 
 #Upload the songs to YouTube Music
 def upload_all():
-    yt = YTMusic('browser.json')
-    for folder in os.listdir():
+    yt = YTMusic(os.path.join(root, 'browser.json'))
+    for folder in os.listdir(root):
         try:
-            if os.path.isdir(folder) and folder.split(" - ")[1].isnumeric():
+            if os.path.isdir(os.path.join(root, folder)) and folder.split(" - ")[1].isnumeric():
                 if folder.split(" - ")[1] == "0000":
                     log.error(f"Album with year '0000' for {folder}, skip upload.")
                     continue
                 log.info(f"Now uploading {folder}")
-                album_list = [file for file in os.listdir(folder) if file.endswith(".mp3")]
+                album_list = [file for file in os.listdir(os.path.join(root, folder)) if file.endswith(".mp3")]
                 total_uploaded = 0
                 for file in album_list:
                     if file.endswith(".mp3"):
-                        yt.upload_song(os.path.join(folder, file))
+                        yt.upload_song(os.path.join(root, folder, file))
                         total_uploaded += 1
                 if total_uploaded == len(album_list):
-                    shutil.rmtree(folder)
+                    shutil.rmtree(os.path.join(root, folder))
                 else:
                     log.error(f"Uploading failed for {len(album_list) - total_uploaded} songs for {folder}")
         except IndexError:
@@ -292,7 +295,7 @@ def upload_all():
 
 
 def run():
-    with open("lists.txt", "rt") as file:
+    with open(os.path.join(root, "lists.txt"), "rt") as file:
         for i, link in enumerate(file.readlines(), start=1):
             try:
                 playlist = (
@@ -302,7 +305,7 @@ def run():
                 continue
             else:
                 break
-    with open("lists.txt", "rt") as file:
+    with open(os.path.join(root, "lists.txt"), "rt") as file:
         pool = ThreadPool(processes=int(os.cpu_count()/2))
         pool.map(download_playlist, [link.strip() for link in file.readlines() if link.strip()])
         # for link in file.readlines():
