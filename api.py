@@ -21,7 +21,7 @@ class Home(Resource):
         else:
             return {'message': 'Welcome to the ytmusicdl API!', 'status': 'stopped'}
     
-api.add_resource(Home, '/')
+api.add_resource(Home, '/api')
 
 class Log(Resource):
     def get(self):
@@ -43,7 +43,7 @@ class Log(Resource):
                 return (log), 200
             return (log[-20:]), 200
 
-api.add_resource(Log, '/log')
+api.add_resource(Log, '/api/log')
 
 class Error(Resource):
     def get(self):
@@ -65,7 +65,7 @@ class Error(Resource):
                 return (log), 200
             return (log[-20:]), 200
         
-api.add_resource(Error, '/error')
+api.add_resource(Error, '/api/error')
 
 
 class Start(Resource):
@@ -86,7 +86,7 @@ class Start(Resource):
         else:
             return {'status': 'No URLs provided'}, 400
         
-api.add_resource(Start, '/start')
+api.add_resource(Start, '/api/start')
 
 class Stop(Resource):
     def get(self):
@@ -102,7 +102,7 @@ class Stop(Resource):
         else:
             return {'status': 'Not running'}, 200
         
-api.add_resource(Stop, '/stop')
+api.add_resource(Stop, '/api/stop')
     
 if __name__ == '__main__':
     app.run(debug=True)
