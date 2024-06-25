@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 
@@ -16,11 +17,11 @@ root = os.path.dirname(os.path.abspath(__file__))
 
 @app.route("/", methods=["GET", "POST"])
 def inicio():
-    if request.method == 'POST':
-        body = request.form['body']
+    if request.method == "POST":
+        body = request.form["body"]
         with open("lists.txt", "wt") as file:
             file.write(body)
-        return redirect(url_for('inicio'))  # noqa: F821
+        return redirect(url_for("inicio"))  # noqa: F821
     message = {}
     ps_aux = subprocess.run(
         ["ps", "aux"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
