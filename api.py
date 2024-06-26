@@ -14,6 +14,10 @@ root = os.path.dirname(os.path.abspath(__file__))
 
 #########FRONTEND###########
 
+@app.route("/heroes")
+def heroes():
+    return render_template("heroes.html")
+
 
 @app.route("/", methods=["GET", "POST"])
 def inicio():
