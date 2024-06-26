@@ -48,7 +48,7 @@ def inicio():
         links = open("lists.txt", "rt").read()
     except:
         links = None
-    return render_template("index.html", message=message, links=links if links else "")
+    return render_template("index.html", message=message, links=links if links else "", len=len)
 
 
 #########BACKEND###########
