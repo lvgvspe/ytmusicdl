@@ -313,7 +313,7 @@ def run():
         # for link in file.readlines():
         #     download_playlist(link.strip())
     log.info("Download finished! Starting upload...")
-    #upload_all()
+    upload_all()
     log.info("Upload finished!")
 
 
