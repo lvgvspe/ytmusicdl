@@ -14,6 +14,7 @@ root = os.path.dirname(os.path.abspath(__file__))
 
 #########FRONTEND###########
 
+
 @app.route("/heroes")
 def heroes():
     return render_template("heroes.html")
@@ -37,18 +38,29 @@ def inicio():
     ]
     count = len(process)
     if count > 0:
-        message = {
-            "message": "Welcome to the ytmusicdl API!",
-            "status": "running",
-            "pid": process[0].split()[1],
-        }
+        message = {"message": "Welcome to the ytmusicdl API!", "status": "running"}
     else:
         message = {"message": "Welcome to the ytmusicdl API!", "status": "stopped"}
     try:
         links = open("lists.txt", "rt").read()
     except:
         links = None
-    return render_template("index.html", message=message, links=links if links else "", len=len)
+    try:
+        log = open(os.path.join(root, "app.log"), "r").readlines()[-1]
+    except:
+        log = None
+    try:
+        refresh = request.args.get("refresh")
+    except:
+        refresh = None
+    return render_template(
+        "index.html",
+        message=message,
+        links=links if links else "",
+        len=len,
+        log=log if log else "",
+        refresh=refresh if refresh else "",
+    )
 
 
 #########BACKEND###########
@@ -139,6 +151,35 @@ api.add_resource(Error, "/api/error")
 
 
 class Start(Resource):
+    def get(self):
+        ps_aux = subprocess.run(
+            ["ps", "aux"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+        )
+        count = len(
+            [
+                line
+                for line in ps_aux.stdout.decode("utf-8").split("\n")
+                if "python3 -m main run" in line
+            ]
+        )
+        if count > 0:
+            return {"status": "Already running"}, 200
+        else:
+            try:
+                os.remove(os.path.join(root, "app.log"))
+                os.remove(os.path.join(root, "error.log"))
+            except:
+                pass
+            _ = subprocess.Popen(
+                [
+                    "/home/lucas/repos/ytmusicdl/.venv/bin/python3",
+                    "-m",
+                    "main",
+                    "run",
+                ]
+            )
+            return redirect(url_for("inicio", refresh=3))
+
     def post(self):
         urls = request.json["urls"]
         if len(urls) > 0:
@@ -161,7 +202,7 @@ class Start(Resource):
                 os.remove(os.path.join(root, "error.log"))
                 _ = subprocess.Popen(
                     [
-                        "/home/lucas/repos/ytmusicdl/api/.venv/bin/python3",
+                        "/home/lucas/repos/ytmusicdl/.venv/bin/python3",
                         "-m",
                         "main",
                         "run",

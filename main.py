@@ -7,7 +7,7 @@ from urllib.error import HTTPError
 
 from pytube import YouTube, Playlist
 from pytube.helpers import DeferredGeneratorList, safe_filename
-from pytube.exceptions import MaxRetriesExceeded
+from pytube.exceptions import MaxRetriesExceeded, RegexMatchError
 from pydub import AudioSegment
 import requests
 from mutagen.id3 import ID3, APIC
@@ -131,7 +131,7 @@ def download_image(url, file_path):
         raise Exception(f"Error downloading image: {e}") from e
 
 
-def download_song(i, video, album_title, author, playlist, album_year, image_path):
+def download_song(i, video, album_title, author, playlist, album_year, image_path, url):
     # Download audio only
     extension = None
     bitrate = None
@@ -184,6 +184,14 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
                             log.error(
                                 f"Max Retries error while downloading {video.title} from {album_title} - {author}"
                             )
+                            return
+                        except RegexMatchError:
+                            log.error(
+                                f"REGEX error while downloading {video.title} from {album_title} - {author}"
+                            )
+                            files = [file for file in os.listdir(os.path.join(root, album_title)) if file.endswith(".mp3")]
+                            if (str(i).zfill(2) + " - " + safe_filename(video.title) + ".mp3") not in files:
+                                download_playlist(url)
                             return
 
     # Convert file to mp3 using pydub
@@ -262,13 +270,15 @@ def download_playlist(url):
     )
     image_path = os.path.join(root, album_title, "image.jpg")
     items = [
-        (i, video, safe_filename(album_title), author, playlist, album_year, image_path)
+        (i, video, safe_filename(album_title), author, playlist, album_year, image_path, url)
         for i, video in enumerate(playlist.videos, start=1)
     ]
     pool = ThreadPool(processes=2)
     pool.starmap(download_song, items)
-
-    os.remove(image_path)
+    try:
+        os.remove(image_path)
+    except:
+        pass
 
 #Upload the songs to YouTube Music
 def upload_all():
