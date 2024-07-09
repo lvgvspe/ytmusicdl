@@ -3,3 +3,4 @@ api/**/
 browser.json
 lists.txt
 *.log
+.venv

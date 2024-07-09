@@ -7,7 +7,7 @@ from urllib.error import HTTPError
 
 from pytube import YouTube, Playlist
 from pytube.helpers import DeferredGeneratorList, safe_filename
-from pytube.exceptions import MaxRetriesExceeded, RegexMatchError
+from pytube.exceptions import MaxRetriesExceeded
 from pydub import AudioSegment
 import requests
 from mutagen.id3 import ID3, APIC
@@ -184,14 +184,6 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
                             log.error(
                                 f"Max Retries error while downloading {video.title} from {album_title} - {author}"
                             )
-                            return
-                        except RegexMatchError:
-                            log.error(
-                                f"REGEX error while downloading {video.title} from {album_title} - {author}"
-                            )
-                            files = [file for file in os.listdir(os.path.join(root, album_title)) if file.endswith(".mp3")]
-                            if (str(i).zfill(2) + " - " + safe_filename(video.title) + ".mp3") not in files:
-                                download_playlist(url)
                             return
 
     # Convert file to mp3 using pydub
