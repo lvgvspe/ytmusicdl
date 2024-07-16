@@ -12,7 +12,7 @@ api = Api(app)
 
 root = os.path.dirname(os.path.abspath(__file__))
 
-#########FRONTEND###########
+##########FRONTEND############
 
 
 @app.route("/heroes")

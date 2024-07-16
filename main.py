@@ -1,5 +1,6 @@
 import os
 import sys
+from zipfile import ZipFile
 from typing import Iterable
 from multiprocessing.pool import ThreadPool
 from math import ceil
@@ -295,6 +296,35 @@ def upload_all():
         except IndexError:
             pass
 
+#Serve static file zipped
+def zip_all():
+    try:
+        os.remove(os.path.join(root, "files.zip"))
+    except:
+        pass
+    with ZipFile(os.path.join(root, "static", "files.zip"), "w") as zip_file:
+        for folder in os.listdir(root):
+            try:
+                if os.path.isdir(os.path.join(root, folder)) and folder.split(" - ")[1].isnumeric():
+                    if folder.split(" - ")[1] == "0000":
+                        log.error(f"Album with year '0000' for {folder}, skip upload.")
+                        continue
+                    log.info(f"Now zipping {folder}")
+                    zip_file.mkdir(folder)
+                    album_list = [file for file in os.listdir(os.path.join(root, folder)) if file.endswith(".mp3")]
+                    total_uploaded = 0
+                    for file in album_list:
+                        if file.endswith(".mp3"):
+                            zip_file.write(os.path.join(root, folder, file))
+                            total_uploaded += 1
+                    if total_uploaded == len(album_list):
+                        shutil.rmtree(os.path.join(root, folder))
+                        zip_file.close()
+                    else:
+                        log.error(f"Uploading failed for {len(album_list) - total_uploaded} songs for {folder}")
+                        zip_file.close()
+            except IndexError:
+                pass
 
 def run():
     with open(os.path.join(root, "lists.txt"), "rt") as file:
@@ -313,7 +343,8 @@ def run():
         # for link in file.readlines():
         #     download_playlist(link.strip())
     log.info("Download finished! Starting upload...")
-    upload_all()
+    #upload_all()
+    zip_all()
     log.info("Upload finished!")
 
 
