@@ -60,6 +60,7 @@ def inicio():
         len=len,
         log=log if log else "",
         refresh=refresh if refresh else "",
+        is_zip = os.path.isfile(os.path.join(root, "static", "files.zip"))
     )
 
 
@@ -172,7 +173,7 @@ class Start(Resource):
                 pass
             _ = subprocess.Popen(
                 [
-                    "/home/lucas/repos/ytmusicdl/.venv/bin/python3",
+                    "/home/endeavour/repos/ytmusicdl/.venv/bin/python3",
                     "-m",
                     "main",
                     "run",
@@ -202,7 +203,7 @@ class Start(Resource):
                 os.remove(os.path.join(root, "error.log"))
                 _ = subprocess.Popen(
                     [
-                        "/home/lucas/repos/ytmusicdl/.venv/bin/python3",
+                        "/home/endeavour/repos/ytmusicdl/.venv/bin/python3",
                         "-m",
                         "main",
                         "run",

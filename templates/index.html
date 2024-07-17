@@ -40,6 +40,10 @@
               >Status: {{ "Parado" if message["status"] == 'stopped' else
               "Rodando" }}</small
             >
+            <br />
+            {% if message["status"] == 'stopped' and is_zip %}
+            <a href="{{ url_for('static', filename='files.zip') }}">Baixar último zip</a>
+            {% endif %}
             <hr class="my-4" />
             <button class="w-100 btn btn-lg btn-primary" onclick="window.open('/api/start')">
               Baixar

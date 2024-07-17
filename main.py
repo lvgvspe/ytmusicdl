@@ -310,12 +310,11 @@ def zip_all():
                         log.error(f"Album with year '0000' for {folder}, skip upload.")
                         continue
                     log.info(f"Now zipping {folder}")
-                    zip_file.mkdir(folder)
                     album_list = [file for file in os.listdir(os.path.join(root, folder)) if file.endswith(".mp3")]
                     total_uploaded = 0
                     for file in album_list:
                         if file.endswith(".mp3"):
-                            zip_file.write(os.path.join(root, folder, file))
+                            zip_file.write(os.path.join(root, folder, file), os.path.join(folder, file))
                             total_uploaded += 1
                     if total_uploaded == len(album_list):
                         shutil.rmtree(os.path.join(root, folder))
