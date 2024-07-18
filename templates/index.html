@@ -27,7 +27,7 @@
             method="post"
           >
             <div class="form-floating mb-3">
-              <textarea class="form-control" name="body" id="body" style="height: {{40*len(links.split("\n"))+40}}px">
+              <textarea class="form-control" name="body" id="body" style="height: {{60*len(links.split("\n"))+60}}px">
 {{ request.form['body'] or links }}</textarea
               >
               <label for="body">Links</label>
