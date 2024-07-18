@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+from zipfile import ZipFile
 
 from flask import Flask, request, render_template, redirect, url_for
 from flask_restful import Resource, Api
@@ -53,6 +54,7 @@ def inicio():
         refresh = request.args.get("refresh")
     except:
         refresh = None
+    is_zip = os.path.isfile(os.path.join(root, "static", "files.zip"))
     return render_template(
         "index.html",
         message=message,
@@ -60,7 +62,8 @@ def inicio():
         len=len,
         log=log if log else "",
         refresh=refresh if refresh else "",
-        is_zip = os.path.isfile(os.path.join(root, "static", "files.zip"))
+        is_zip = is_zip,
+        zip_files = list(set([v.split("/")[0] for v in ZipFile(os.path.join(root, "static", "files.zip"), "r").namelist()])) if is_zip else None
     )
 
 

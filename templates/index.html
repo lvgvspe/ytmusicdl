@@ -43,6 +43,12 @@
             <br />
             {% if message["status"] == 'stopped' and is_zip %}
             <a href="{{ url_for('static', filename='files.zip') }}">Baixar último zip</a>
+            <br />
+            <small class="text-body-secondary">Contém:</small>
+            {% for filename in zip_files %}
+            <br />
+            <small class="text-body-secondary">{{ filename }}</small>
+            {% endfor %}
             {% endif %}
             <hr class="my-4" />
             <button class="w-100 btn btn-lg btn-primary" onclick="window.open('/api/start')">
