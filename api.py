@@ -55,6 +55,15 @@ def inicio():
     except:
         refresh = None
     is_zip = os.path.isfile(os.path.join(root, "static", "files.zip"))
+    zip_files = None
+    if is_zip:
+        while True:
+            try:
+                zip_files = list(set([v.split("/")[0] for v in ZipFile(os.path.join(root, "static", "files.zip"), "r").namelist()]))
+            except:
+                ZipFile(os.path.join(root, "static", "files.zip"), "r").close()
+            else:
+                break
     return render_template(
         "index.html",
         message=message,
@@ -63,7 +72,7 @@ def inicio():
         log=log if log else "",
         refresh=refresh if refresh else "",
         is_zip = is_zip,
-        zip_files = list(set([v.split("/")[0] for v in ZipFile(os.path.join(root, "static", "files.zip"), "r").namelist()])) if is_zip else None
+        zip_files = zip_files if is_zip and zip_files else None
     )
 
 
@@ -176,7 +185,7 @@ class Start(Resource):
                 pass
             _ = subprocess.Popen(
                 [
-                    "/home/endeavour/repos/ytmusicdl/.venv/bin/python3",
+                    f"{root}/.venv/bin/python3",
                     "-m",
                     "main",
                     "run",
@@ -206,7 +215,7 @@ class Start(Resource):
                 os.remove(os.path.join(root, "error.log"))
                 _ = subprocess.Popen(
                     [
-                        "/home/endeavour/repos/ytmusicdl/.venv/bin/python3",
+                        f"{root}/.venv/bin/python3",
                         "-m",
                         "main",
                         "run",

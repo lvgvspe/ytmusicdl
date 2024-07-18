@@ -318,10 +318,8 @@ def zip_all():
                             total_uploaded += 1
                     if total_uploaded == len(album_list):
                         shutil.rmtree(os.path.join(root, folder))
-                        zip_file.close()
                     else:
                         log.error(f"Uploading failed for {len(album_list) - total_uploaded} songs for {folder}")
-                        zip_file.close()
             except IndexError:
                 pass
 
