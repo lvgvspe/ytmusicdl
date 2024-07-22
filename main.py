@@ -322,6 +322,28 @@ def zip_all():
                         log.error(f"Uploading failed for {len(album_list) - total_uploaded} songs for {folder}")
             except IndexError:
                 pass
+            
+def zip_again():
+    with ZipFile(os.path.join(root, "static", "files.zip"), "a") as zip_file:
+        for folder in os.listdir(root):
+            try:
+                if os.path.isdir(os.path.join(root, folder)) and folder.split(" - ")[1].isnumeric():
+                    if folder.split(" - ")[1] == "0000":
+                        log.error(f"Album with year '0000' for {folder}, skip upload.")
+                        continue
+                    log.info(f"Now zipping {folder}")
+                    album_list = [file for file in os.listdir(os.path.join(root, folder)) if file.endswith(".mp3")]
+                    total_uploaded = 0
+                    for file in album_list:
+                        if file.endswith(".mp3"):
+                            zip_file.write(os.path.join(root, folder, file), os.path.join(folder, file))
+                            total_uploaded += 1
+                    if total_uploaded == len(album_list):
+                        shutil.rmtree(os.path.join(root, folder))
+                    else:
+                        log.error(f"Uploading failed for {len(album_list) - total_uploaded} songs for {folder}")
+            except IndexError:
+                pass
 
 def run():
     with open(os.path.join(root, "lists.txt"), "rt") as file:
