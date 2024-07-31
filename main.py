@@ -314,7 +314,7 @@ def zip_all():
                     total_uploaded = 0
                     for file in album_list:
                         if file.endswith(".mp3"):
-                            zip_file.write(os.path.join(root, folder, file), os.path.join(folder, file))
+                            zip_file.write(os.path.join(root, folder, file), file)
                             total_uploaded += 1
                     if total_uploaded == len(album_list):
                         shutil.rmtree(os.path.join(root, folder))
@@ -336,7 +336,7 @@ def zip_again():
                     total_uploaded = 0
                     for file in album_list:
                         if file.endswith(".mp3"):
-                            zip_file.write(os.path.join(root, folder, file), os.path.join(folder, file))
+                            zip_file.write(os.path.join(root, folder, file), file)
                             total_uploaded += 1
                     if total_uploaded == len(album_list):
                         shutil.rmtree(os.path.join(root, folder))
