@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from zipfile import ZipFile
 from typing import Iterable
 from multiprocessing.pool import ThreadPool
@@ -253,6 +254,13 @@ def download_playlist(url):
     except:
         album_year = "0000"
         log.error(f"Year ZERO error for Album {playlist.title.replace('Album', f'{author} - {album_year}')}. Run fix_zero after script to fix.")
+    # def get_year(url):
+    #     id = url.split('=')[-1]
+    #     albums = json.load(open(os.path.join(root, 'lists.json'), 'rt'))
+    #     for album in albums:
+    #         if album[3] == id:
+    #             return album[2]
+    # album_year = get_year(url)
     album_title = playlist.title.replace("Album", f"{author} - {album_year}")
 
     # Create folder for the playlist
