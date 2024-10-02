@@ -7,6 +7,7 @@ from multiprocessing.pool import ThreadPool
 from math import ceil
 from urllib.error import HTTPError
 
+import librosa
 from pytube import YouTube, Playlist
 from pytube.helpers import DeferredGeneratorList, safe_filename
 from pytube.exceptions import MaxRetriesExceeded
@@ -64,6 +65,27 @@ def fix_zero():
                 )
         except IndexError:
             pass
+# Function to find bpm of song
+def find_bpm(file_path):
+    audio_file = librosa.load(file_path)
+    y, sr = audio_file
+    tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
+    audio = EasyID3(file_path)
+    audio["bpm"] = str(int(tempo[0]))
+    audio.save()
+    return int(tempo[0])
+
+# Add BPM tag to all songs inside folder
+def add_bpm_to_all(file_path):
+    for i, file in enumerate(os.listdir(file_path)):
+        try:
+            if file.endswith(".mp3"):
+                print(f"{i}/{len(os.listdir(file_path))} : {file}"+" "*20, end="\r")
+                find_bpm(os.path.join(file_path, file))
+        except:
+            print()
+            print(f"Erro em {file}")
+            print()
 
 
 # Create function to insert tags to mp3 file
