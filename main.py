@@ -96,6 +96,7 @@ def edit_tags(file_path, unsafe_title, author, album, year, number, image_path):
             encoding=3, mime="image/jpeg", type=3, desc="Cover", data=art.read()
         )
         audio.save()
+    find_bpm(file_path)
     audio = EasyID3(file_path)
     audio["title"] = unsafe_title
     audio["artist"] = author
