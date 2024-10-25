@@ -376,6 +376,27 @@ def zip_again():
             except IndexError:
                 pass
 
+def save_all():
+    for folder in os.listdir(root):
+        try:
+            if os.path.isdir(os.path.join(root, folder)) and folder.split(" - ")[1].isnumeric():
+                if folder.split(" - ")[1] == "0000":
+                    log.error(f"Album with year '0000' for {folder}, skip saving.")
+                    continue
+                log.info(f"Now Saving {folder}")
+                album_list = [file for file in os.listdir(os.path.join(root, folder)) if file.endswith(".mp3")]
+                total_uploaded = 0
+                for file in album_list:
+                    if file.endswith(".mp3"):
+                        shutil.copyfile(os.path.join(root, folder, file), os.path.join(os.path.expanduser("~"), "Músicas", file))
+                        total_uploaded += 1
+                if total_uploaded == len(album_list):
+                    shutil.rmtree(os.path.join(root, folder))
+                else:
+                    log.error(f"Saving failed for {len(album_list) - total_uploaded} songs for {folder}")
+        except IndexError:
+            pass
+
 def run():
     with open(os.path.join(root, "lists.txt"), "rt") as file:
         for i, link in enumerate(file.readlines(), start=1):
@@ -393,8 +414,9 @@ def run():
         # for link in file.readlines():
         #     download_playlist(link.strip())
     log.info("Download finished! Starting upload...")
-    #upload_all()
-    zip_all()
+    # upload_all()
+    # zip_all()
+    save_all()
     log.info("Upload finished!")
 
 
