@@ -8,9 +8,9 @@ from math import ceil
 from urllib.error import HTTPError
 
 import librosa
-from pytube import YouTube, Playlist
-from pytube.helpers import DeferredGeneratorList, safe_filename
-from pytube.exceptions import MaxRetriesExceeded
+from pytubefix import YouTube, Playlist, Channel
+from pytubefix.helpers import DeferredGeneratorList, safe_filename
+from pytubefix.exceptions import MaxRetriesExceeded
 from pydub import AudioSegment
 import requests
 from mutagen.id3 import ID3, APIC
@@ -25,51 +25,51 @@ log = create_logger("ytdownloader")
 
 root = os.path.dirname(os.path.abspath(__file__))
 
-import ssl
-from pytube import request
-from pytube import extract
-from pytube.innertube import _default_clients
-from pytube.exceptions import RegexMatchError
+# import ssl
+# from pytube import request
+# from pytube import extract
+# from pytube.innertube import _default_clients
+# from pytube.exceptions import RegexMatchError
 
-_default_clients["ANDROID"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["IOS"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["ANDROID_EMBED"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["IOS_EMBED"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["IOS_MUSIC"]["context"]["client"]["clientVersion"] = "6.41"
-_default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID"]
+# _default_clients["ANDROID"]["context"]["client"]["clientVersion"] = "19.08.35"
+# _default_clients["IOS"]["context"]["client"]["clientVersion"] = "19.08.35"
+# _default_clients["ANDROID_EMBED"]["context"]["client"]["clientVersion"] = "19.08.35"
+# _default_clients["IOS_EMBED"]["context"]["client"]["clientVersion"] = "19.08.35"
+# _default_clients["IOS_MUSIC"]["context"]["client"]["clientVersion"] = "6.41"
+# _default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID"]
 
-import pytube, re
-def patched_get_throttling_function_name(js: str) -> str:
-    function_patterns = [
-        r'a\.[a-zA-Z]\s*&&\s*\([a-z]\s*=\s*a\.get\("n"\)\)\s*&&.*?\|\|\s*([a-z]+)',
-        r'\([a-z]\s*=\s*([a-zA-Z0-9$]+)(\[\d+\])?\([a-z]\)',
-        r'\([a-z]\s*=\s*([a-zA-Z0-9$]+)(\[\d+\])\([a-z]\)',
-    ]
-    for pattern in function_patterns:
-        regex = re.compile(pattern)
-        function_match = regex.search(js)
-        if function_match:
-            if len(function_match.groups()) == 1:
-                return function_match.group(1)
-            idx = function_match.group(2)
-            if idx:
-                idx = idx.strip("[]")
-                array = re.search(
-                    r'var {nfunc}\s*=\s*(\[.+?\]);'.format(
-                        nfunc=re.escape(function_match.group(1))),
-                    js
-                )
-                if array:
-                    array = array.group(1).strip("[]").split(",")
-                    array = [x.strip() for x in array]
-                    return array[int(idx)]
+# import pytube, re
+# def patched_get_throttling_function_name(js: str) -> str:
+#     function_patterns = [
+#         r'a\.[a-zA-Z]\s*&&\s*\([a-z]\s*=\s*a\.get\("n"\)\)\s*&&.*?\|\|\s*([a-z]+)',
+#         r'\([a-z]\s*=\s*([a-zA-Z0-9$]+)(\[\d+\])?\([a-z]\)',
+#         r'\([a-z]\s*=\s*([a-zA-Z0-9$]+)(\[\d+\])\([a-z]\)',
+#     ]
+#     for pattern in function_patterns:
+#         regex = re.compile(pattern)
+#         function_match = regex.search(js)
+#         if function_match:
+#             if len(function_match.groups()) == 1:
+#                 return function_match.group(1)
+#             idx = function_match.group(2)
+#             if idx:
+#                 idx = idx.strip("[]")
+#                 array = re.search(
+#                     r'var {nfunc}\s*=\s*(\[.+?\]);'.format(
+#                         nfunc=re.escape(function_match.group(1))),
+#                     js
+#                 )
+#                 if array:
+#                     array = array.group(1).strip("[]").split(",")
+#                     array = [x.strip() for x in array]
+#                     return array[int(idx)]
 
-    raise RegexMatchError(
-        caller="get_throttling_function_name", pattern="multiple"
-    )
+#     raise RegexMatchError(
+#         caller="get_throttling_function_name", pattern="multiple"
+#     )
 
-ssl._create_default_https_context = ssl._create_unverified_context
-pytube.cipher.get_throttling_function_name = patched_get_throttling_function_name
+# ssl._create_default_https_context = ssl._create_unverified_context
+# pytube.cipher.get_throttling_function_name = patched_get_throttling_function_name
 
 # Rewrite Playlist class to enable oauth within YouTube class
 class Playlist(Playlist):
@@ -261,7 +261,7 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
         os.path.join(root, album_title)
         + "/"
         + safe_filename(video.title)
-        + (".webm" if extension else ".mp4"),
+        + (".webm" if extension else ".m4a"),
         format="webm" if extension else "m4a",
     )
     sound.export(
@@ -293,7 +293,7 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
         os.path.join(root, album_title)
         + "/"
         + safe_filename(video.title)
-        + (".webm" if extension else ".mp4")
+        + (".webm" if extension else ".m4a")
     )
 
 
@@ -310,7 +310,9 @@ def download_playlist(url):
     log.debug(f"Playlist: {url}")
     playlist = Playlist(url)
     try:
-        author = playlist.videos[0].author.replace(' - Topic', '')
+        # author = playlist.videos[0].author.replace(' - Topic', '')
+        channel = Channel(playlist.videos[0].channel_url)
+        author = channel.channel_name.replace(' - Topic', '')
     except IndexError:
         log.error(f"Error: Playlist {url} is empty")
         return
