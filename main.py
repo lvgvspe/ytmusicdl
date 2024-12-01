@@ -336,6 +336,9 @@ def download_playlist(url):
         album_year = get_album_year(
             author, playlist.title.replace("Album - ", "").strip()
         )
+        if len(album_year) != 4:
+            album_year = "0000"
+            log.error(f"Year ZERO error for Album {playlist.title.replace('Album', f'{author} - {album_year}')}. Run fix_zero after script to fix.")
     except:
         album_year = "0000"
         log.error(f"Year ZERO error for Album {playlist.title.replace('Album', f'{author} - {album_year}')}. Run fix_zero after script to fix.")
