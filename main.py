@@ -207,17 +207,23 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
     bitrate = None
     try:
         bitrate = "256"
-        video.streams.get_by_itag(141).download(output_path=os.path.join(root, album_title))
+        stream = video.streams.get_by_itag(141)
+        default_filename = stream.default_filename
+        stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
     except:
         log.warning(f"Failed {video.title} from {album_title} - {author}. Trying lower")
         try:
-            video.streams.get_by_itag(140).download(output_path=os.path.join(root, album_title))
+            stream = video.streams.get_by_itag(140)
+            default_filename = stream.default_filename
+            stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
         except:
             log.warning(
                 f"Failed {video.title} from {album_title} - {author}. Trying lowest"
             )
             try:
-                video.streams.get_by_itag(139).download(output_path=os.path.join(root, album_title))
+                stream = video.streams.get_by_itag(139)
+                default_filename = stream.default_filename
+                stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
             except:
                 log.warning(
                     f"Failed {video.title} from {album_title} - {author}. Trying webm"
@@ -225,21 +231,25 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
                 extension = "webm"
                 try:
                     bitrate = "160"
-                    video.streams.get_by_itag(140).download(output_path=os.path.join(root, album_title))
+                    stream = video.streams.get_by_itag(140)
+                    default_filename = stream.default_filename
+                    stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
                 except:
                     log.warning(
                         f"Failed {video.title} from {album_title} - {author}. Trying lower webm"
                     )
                     try:
-                        video.streams.get_by_itag(139).download(output_path=os.path.join(root, album_title))
+                        stream = video.streams.get_by_itag(139)
+                        default_filename = stream.default_filename
+                        stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
                     except:
                         log.warning(
                             f"Failed {video.title} from {album_title} - {author}. Trying lowest webm"
                         )
                         try:
-                            video.streams.get_by_itag(139).download(
-                                output_path=os.path.join(root, album_title)
-                            )
+                            stream = video.streams.get_by_itag(139)
+                            default_filename = stream.default_filename
+                            stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
                         except AttributeError:
                             log.error(
                                 f"Attribute error while downloading {video.title} from {album_title} - {author}"
