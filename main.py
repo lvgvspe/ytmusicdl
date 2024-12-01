@@ -205,25 +205,29 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
     # Download audio only
     extension = None
     bitrate = None
+    filename = None
     try:
         bitrate = "256"
         stream = video.streams.get_by_itag(141)
-        default_filename = stream.default_filename
-        stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
+        extension = stream.default_filename.split(".")[-1]
+        filename = safe_filename(video.title)+"."+extension
+        stream.download(output_path=os.path.join(root, album_title), filename=filename)
     except:
         log.warning(f"Failed {video.title} from {album_title} - {author}. Trying lower")
         try:
             stream = video.streams.get_by_itag(140)
-            default_filename = stream.default_filename
-            stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
+            extension = stream.default_filename.split(".")[-1]
+            filename = safe_filename(video.title)+"."+extension
+            stream.download(output_path=os.path.join(root, album_title), filename=filename)
         except:
             log.warning(
                 f"Failed {video.title} from {album_title} - {author}. Trying lowest"
             )
             try:
                 stream = video.streams.get_by_itag(139)
-                default_filename = stream.default_filename
-                stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
+                extension = stream.default_filename.split(".")[-1]
+                filename = safe_filename(video.title)+"."+extension
+                stream.download(output_path=os.path.join(root, album_title), filename=filename)
             except:
                 log.warning(
                     f"Failed {video.title} from {album_title} - {author}. Trying webm"
@@ -232,24 +236,27 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
                 try:
                     bitrate = "160"
                     stream = video.streams.get_by_itag(140)
-                    default_filename = stream.default_filename
-                    stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
+                    extension = stream.default_filename.split(".")[-1]
+                    filename = safe_filename(video.title)+"."+extension
+                    stream.download(output_path=os.path.join(root, album_title), filename=filename)
                 except:
                     log.warning(
                         f"Failed {video.title} from {album_title} - {author}. Trying lower webm"
                     )
                     try:
                         stream = video.streams.get_by_itag(139)
-                        default_filename = stream.default_filename
-                        stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
+                        extension = stream.default_filename.split(".")[-1]
+                        filename = safe_filename(video.title)+"."+extension
+                        stream.download(output_path=os.path.join(root, album_title), filename=filename)
                     except:
                         log.warning(
                             f"Failed {video.title} from {album_title} - {author}. Trying lowest webm"
                         )
                         try:
                             stream = video.streams.get_by_itag(139)
-                            default_filename = stream.default_filename
-                            stream.download(output_path=os.path.join(root, album_title), filename=safe_filename(default_filename))
+                            extension = stream.default_filename.split(".")[-1]
+                            filename = safe_filename(video.title)+"."+extension
+                            stream.download(output_path=os.path.join(root, album_title), filename=filename)
                         except AttributeError:
                             log.error(
                                 f"Attribute error while downloading {video.title} from {album_title} - {author}"
@@ -270,9 +277,8 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
     sound = AudioSegment.from_file(
         os.path.join(root, album_title)
         + "/"
-        + safe_filename(video.title)
-        + (".webm" if extension else ".m4a"),
-        format="webm" if extension else "m4a",
+        + filename,
+        format=extension,
     )
     sound.export(
         os.path.join(root, album_title)
@@ -302,8 +308,7 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
     os.remove(
         os.path.join(root, album_title)
         + "/"
-        + safe_filename(video.title)
-        + (".webm" if extension else ".m4a")
+        + filename
     )
 
 

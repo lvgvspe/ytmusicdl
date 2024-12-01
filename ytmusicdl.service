@@ -5,8 +5,8 @@ After=network.service
 [Service]
 Restart=always
 WorkingDirectory=/home/lucas/repos/ytmusicdl
-Environment="PATH=/home/lucas/repos/ytmusicdl/.venv/bin:$PATH"
-ExecStart=/usr/bin/bash start.sh
+Environment="PATH=/home/lucas/repos/ytmusicdl/.venv/bin:/usr/bin/:$PATH"
+ExecStart=bash start.sh
 
 [Install]
 WantedBy=default.target
