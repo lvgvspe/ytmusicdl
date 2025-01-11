@@ -28,4 +28,4 @@ async def enviar_stream(stream: io.BytesIO, nome_arquivo: str):
     """
     bot = Bot(token=configs['telegram']['token'])
     async with bot:
-        await bot.send_document(chat_id=configs['telegram']['chatid'], document=stream, filename=nome_arquivo)
+        await bot.send_document(chat_id=configs['telegram']['chatid'], document=stream, filename=nome_arquivo, disable_notification=True)
