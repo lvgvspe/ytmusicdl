@@ -16,14 +16,17 @@ import requests
 from mutagen.id3 import ID3, APIC
 from mutagen.easyid3 import EasyID3
 from ytmusicapi import YTMusic
+from anyio import run as async_run
 
 from log import create_logger
 import shutil
+import tgram
 
 
 log = create_logger("ytdownloader")
 
 root = os.path.dirname(os.path.abspath(__file__))
+
 
 # Rewrite Playlist class to enable oauth within YouTube class
 class Playlist(Playlist):
@@ -313,6 +316,10 @@ def download_playlist(url):
         log.error(f"Error: Playlist {url} is empty")
         return
     log.info(f"Now processing {playlist.title.replace('Album - ', '')} - {author}")
+    async_run(
+        tgram.enviar_notificacao,
+        f"Now processing {playlist.title.replace('Album - ', '')} - {author}",
+    )
     try:
         album_year = get_album_year(
             author, playlist.title.replace("Album - ", "").strip()
@@ -366,7 +373,7 @@ def download_playlist(url):
 
 # Upload the songs to YouTube Music
 def upload_all():
-    yt = YTMusic(os.path.join(root, "browser.json"))
+    # yt = YTMusic(os.path.join(root, "browser.json"))
     for folder in os.listdir(root):
         try:
             if (
@@ -377,6 +384,10 @@ def upload_all():
                     log.error(f"Album with year '0000' for {folder}, skip upload.")
                     continue
                 log.info(f"Now uploading {folder}")
+                async_run(
+                    tgram.enviar_notificacao,
+                    f"Now uploading {folder}",
+                )
                 album_list = [
                     file
                     for file in os.listdir(os.path.join(root, folder))
@@ -385,13 +396,21 @@ def upload_all():
                 total_uploaded = 0
                 for file in album_list:
                     if file.endswith(".mp3"):
-                        yt.upload_song(os.path.join(root, folder, file))
+                        async_run(
+                            tgram.enviar_stream,
+                            open(os.path.join(root, folder, file), "rb"),
+                            file,
+                        )
                         total_uploaded += 1
                 if total_uploaded == len(album_list):
                     shutil.rmtree(os.path.join(root, folder))
                 else:
                     log.error(
                         f"Uploading failed for {len(album_list) - total_uploaded} songs for {folder}"
+                    )
+                    async_run(
+                        tgram.enviar_notificacao,
+                        f"Uploading failed for {len(album_list) - total_uploaded} songs for {folder}",
                     )
         except IndexError:
             pass
@@ -520,10 +539,20 @@ def run():
         # for link in file.readlines():
         #     download_playlist(link.strip())
     log.info("Download finished! Starting upload...")
-    # upload_all()
+    upload_all()
     # zip_all()
-    save_all()
+    # save_all()
+    async_run(tgram.enviar_stream, open(os.path.join(root, "app.log"), "rb"), "app.log")
+    try:
+        async_run(
+            tgram.enviar_stream,
+            open(os.path.join(root, "error.log"), "rb"),
+            "error.log",
+        )
+    except:
+        pass
     log.info("Upload finished!")
+    async_run(tgram.enviar_notificacao, "Upload finished!")
 
 
 if __name__ == "__main__":

@@ -5,3 +5,4 @@ lists.txt
 *.log
 .venv
 files.zip
+*.toml
