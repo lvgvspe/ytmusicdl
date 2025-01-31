@@ -380,9 +380,9 @@ def upload_all():
                 os.path.isdir(os.path.join(root, folder))
                 and folder.split(" - ")[1].isnumeric()
             ):
-                if folder.split(" - ")[1] == "0000":
-                    log.error(f"Album with year '0000' for {folder}, skip upload.")
-                    continue
+                # if folder.split(" - ")[1] == "0000":
+                #     log.error(f"Album with year '0000' for {folder}, skip upload.")
+                #     continue
                 log.info(f"Now uploading {folder}")
                 async_run(
                     tgram.enviar_notificacao,
@@ -396,12 +396,17 @@ def upload_all():
                 total_uploaded = 0
                 for file in album_list:
                     if file.endswith(".mp3"):
-                        async_run(
-                            tgram.enviar_stream,
-                            open(os.path.join(root, folder, file), "rb"),
-                            file,
-                        )
-                        total_uploaded += 1
+                        while True:
+                            try:
+                                async_run(
+                                    tgram.enviar_stream,
+                                    open(os.path.join(root, folder, file), "rb"),
+                                    file,
+                                )
+                            except:
+                                continue
+                            total_uploaded += 1
+                            break
                 if total_uploaded == len(album_list):
                     shutil.rmtree(os.path.join(root, folder))
                 else:
