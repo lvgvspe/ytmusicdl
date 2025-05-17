@@ -3,6 +3,8 @@ Description=Serviço do ytmusicdl
 After=network.service
 
 [Service]
+User=lucas
+Group=lucas
 Restart=always
 WorkingDirectory=/home/lucas/repos/ytmusicdl
 Environment="PATH=/home/lucas/repos/ytmusicdl/.venv/bin:/usr/bin/:$PATH"

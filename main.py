@@ -544,9 +544,9 @@ def run():
         # for link in file.readlines():
         #     download_playlist(link.strip())
     log.info("Download finished! Starting upload...")
-    upload_all()
+    # upload_all()
     # zip_all()
-    # save_all()
+    save_all()
     async_run(tgram.enviar_stream, open(os.path.join(root, "app.log"), "rb"), "app.log")
     try:
         async_run(
