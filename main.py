@@ -35,7 +35,7 @@ class Playlist(Playlist):
 
     def videos_generator(self):
         for url in self.video_urls:
-            yield YouTube(url, use_oauth=True)
+            yield YouTube(url, use_oauth=False)
 
     @property
     def videos(self) -> Iterable[YouTube]:
@@ -491,6 +491,7 @@ def zip_again():
 
 
 def save_all():
+    os.makedirs(os.path.join(os.path.expanduser("~"), "Músicas"), exist_ok=True)
     for folder in os.listdir(root):
         try:
             if (
@@ -499,7 +500,7 @@ def save_all():
             ):
                 if folder.split(" - ")[1] == "0000":
                     log.error(f"Album with year '0000' for {folder}, skip saving.")
-                    continue
+                    # continue
                 log.info(f"Now Saving {folder}")
                 album_list = [
                     file

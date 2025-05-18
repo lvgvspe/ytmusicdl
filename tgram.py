@@ -1,11 +1,7 @@
 import io
-import tomli
+import os
 from telegram import Bot
 
-
-
-with open("telegram.toml", mode="rb") as fp:
-    configs = tomli.load(fp)
 
 async def enviar_notificacao(mensagem: str):
     """
@@ -14,9 +10,15 @@ async def enviar_notificacao(mensagem: str):
     Args:
         mensagem (str): Mensagem a ser enviada ao Telegram.
     """
-    bot = Bot(token=configs['telegram']['token'])
+    token = os.getenv('TELEGRAM_TOKEN')
+    chat_id = os.getenv('TELEGRAM_CHATID')
+    if not token or not chat_id:
+        raise ValueError("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
+
+    bot = Bot(token=token)
     async with bot:
-        await bot.send_message(chat_id=configs['telegram']['chatid'], text=f"YTMusicDL -\n{mensagem}")
+        await bot.send_message(chat_id=chat_id, text=f"YTMusicDL -\n{mensagem}")
+
 
 async def enviar_stream(stream: io.BytesIO, nome_arquivo: str):
     """
@@ -26,6 +28,16 @@ async def enviar_stream(stream: io.BytesIO, nome_arquivo: str):
         stream (io.BytesIO): Stream de dados do arquivo.
         nome_arquivo (str): Nome do arquivo a ser enviado ao Telegram.
     """
-    bot = Bot(token=configs['telegram']['token'])
+    token = os.getenv('TELEGRAM_TOKEN')
+    chat_id = os.getenv('TELEGRAM_CHATID')
+    if not token or not chat_id:
+        raise ValueError("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
+
+    bot = Bot(token=token)
     async with bot:
-        await bot.send_document(chat_id=configs['telegram']['chatid'], document=stream, filename=nome_arquivo, disable_notification=True)
+        await bot.send_document(
+            chat_id=chat_id,
+            document=stream,
+            filename=nome_arquivo,
+            disable_notification=True
+        )
