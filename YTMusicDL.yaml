@@ -1,0 +1,47 @@
+name: ytmusicdl
+services:
+  ytmusicdl:
+    cpu_shares: 90
+    command: []
+    container_name: ytmusicdl_app
+    deploy:
+      resources:
+        limits:
+          memory: 31452M
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TELEGRAM_CHATID=your_chatid
+      - TELEGRAM_TOKEN=your_token
+    hostname: ytmusicdl_app
+    image: lvgvspe2/ytmusicdl:latest
+    ports:
+      - mode: ingress
+        target: 5000
+        published: "5000"
+        protocol: tcp
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    user: ytuser
+    volumes:
+      - type: bind
+        source: path/to/Music
+        target: /home/ytuser/Music
+        bind:
+          create_host_path: true
+    working_dir: /app
+    devices: []
+    cap_add: []
+    network_mode: bridge
+    privileged: false
+x-casaos:
+  author: self
+  category: self
+  hostname: ""
+  icon: ""
+  index: /
+  is_uncontrolled: false
+  port_map: "5000"
+  scheme: http
+  title:
+    custom: YTMusicDL
