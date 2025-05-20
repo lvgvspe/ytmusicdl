@@ -25,7 +25,7 @@ services:
     user: ytuser
     volumes:
       - type: bind
-        source: path/to/Music
+        source: /DATA/Media/Music
         target: /home/ytuser/Music
         bind:
           create_host_path: true
