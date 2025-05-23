@@ -13,7 +13,8 @@ async def enviar_notificacao(mensagem: str):
     token = os.getenv('TELEGRAM_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHATID')
     if not token or not chat_id:
-        raise ValueError("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
+        print("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
+        return
 
     bot = Bot(token=token)
     async with bot:
@@ -31,7 +32,8 @@ async def enviar_stream(stream: io.BytesIO, nome_arquivo: str):
     token = os.getenv('TELEGRAM_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHATID')
     if not token or not chat_id:
-        raise ValueError("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
+        print("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
+        return
 
     bot = Bot(token=token)
     async with bot:
