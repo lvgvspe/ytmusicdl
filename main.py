@@ -491,7 +491,7 @@ def zip_again():
 
 
 def save_all():
-    os.makedirs(os.path.join(os.path.expanduser("~"), "Músicas"), exist_ok=True)
+    os.makedirs(os.path.join(os.path.expanduser("~"), "Music"), exist_ok=True)
     for folder in os.listdir(root):
         try:
             if (
@@ -512,7 +512,7 @@ def save_all():
                     if file.endswith(".mp3"):
                         shutil.copyfile(
                             os.path.join(root, folder, file),
-                            os.path.join(os.path.expanduser("~"), "Músicas", file),
+                            os.path.join(os.path.expanduser("~"), "Music", file),
                         )
                         total_uploaded += 1
                 if total_uploaded == len(album_list):
