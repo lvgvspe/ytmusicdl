@@ -12,7 +12,7 @@ services:
       - PYTHONUNBUFFERED=1
       - TELEGRAM_CHATID=your_chatid
       - TELEGRAM_TOKEN=your_token
-    hostname: ytmusicdl_app
+    hostname: ytmusicdl
     image: lvgvspe2/ytmusicdl:latest
     ports:
       - mode: ingress
