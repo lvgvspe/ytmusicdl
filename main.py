@@ -275,6 +275,8 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
         + "/"
         + str(i).zfill(2)
         + " - "
+        + safe_filename(album_title)
+        + " - "
         + safe_filename(video.title)
         + ".mp3",
         format="mp3",
@@ -287,6 +289,8 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
         os.path.join(root, album_title)
         + "/"
         + str(i).zfill(2)
+        + " - "
+        + safe_filename(album_title)
         + " - "
         + safe_filename(video.title)
         + ".mp3",
