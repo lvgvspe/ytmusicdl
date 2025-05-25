@@ -16,12 +16,12 @@ async def enviar_notificacao(mensagem: str):
         print("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
         return
 
-    bot = Bot(token=token)
-    async with bot:
-        try:
-            await bot.send_message(chat_id=chat_id, text=f"YTMusicDL -\n{mensagem}")
-        except Exception as e:
-                print(f"Erro ao enviar mensagem para o Telegram: {e}")
+    try:
+        bot = Bot(token=token)
+        async with bot:
+                await bot.send_message(chat_id=chat_id, text=f"YTMusicDL -\n{mensagem}")
+    except Exception as e:
+            print(f"Erro ao enviar mensagem para o Telegram: {e}")
 
 
 async def enviar_stream(stream: io.BytesIO, nome_arquivo: str):
@@ -38,14 +38,14 @@ async def enviar_stream(stream: io.BytesIO, nome_arquivo: str):
         print("Telegram token ou chat ID não encontrado nas variáveis de ambiente")
         return
 
-    bot = Bot(token=token)
-    async with bot:
-        try:
-            await bot.send_document(
-                chat_id=chat_id,
-                document=stream,
-                filename=nome_arquivo,
-                disable_notification=True
-            )
-        except Exception as e:
-            print(f"Erro ao enviar arquivo para o Telegram: {e}")
+    try:
+        bot = Bot(token=token)
+        async with bot:
+                await bot.send_document(
+                    chat_id=chat_id,
+                    document=stream,
+                    filename=nome_arquivo,
+                    disable_notification=True
+                )
+    except Exception as e:
+        print(f"Erro ao enviar arquivo para o Telegram: {e}")

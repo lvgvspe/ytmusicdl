@@ -260,6 +260,11 @@ def download_song(i, video, album_title, author, playlist, album_year, image_pat
                                 f"Max Retries error while downloading {video.title} from {album_title} - {author}"
                             )
                             return
+                        except Exception as e:
+                            log.error(
+                                f"Error while downloading {video.title} from {album_title} - {author}: {e}"
+                            )
+                            return
 
     # Convert file to mp3 using pydub
     sound = AudioSegment.from_file(
