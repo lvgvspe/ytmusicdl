@@ -6,3 +6,5 @@ __pycache__/
 *.yaml
 Dockerfile
 dump/
+static/
+build.sh

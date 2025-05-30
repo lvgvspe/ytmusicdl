@@ -35,7 +35,7 @@ class Playlist(Playlist):
 
     def videos_generator(self):
         for url in self.video_urls:
-            yield YouTube(url, use_oauth=False)
+            yield YouTube(url, use_oauth=True)
 
     @property
     def videos(self) -> Iterable[YouTube]:
